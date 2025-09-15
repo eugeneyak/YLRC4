@@ -7,8 +7,6 @@ require "async/semaphore"
 require_relative "config"
 require_relative "telegram"
 require_relative "fsa"
-require_relative "dialogue"
-require_relative "switchman"
 
 require_relative "ai"
 

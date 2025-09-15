@@ -3,6 +3,7 @@ class Telegram::Poller
 
   def initialize
     @offset = 0
+    @client = Telegram::Client.instance
   end
 
   def each
@@ -22,10 +23,11 @@ class Telegram::Poller
   private
 
   def updates
-    client.silent { client.get "getUpdates", offset: @offset, timeout: 60, limit: 100 }
-  end
-
-  def client
-    @client ||= Telegram::Client.instance
+    @client.silent do
+      @client.get "getUpdates", offset: @offset, timeout: 60, limit: 100
+    end
+  rescue StandardError => e
+    Console.warn self, "Error in the process of receiving updates: #{e.message}"
+    []
   end
 end
