@@ -1,4 +1,9 @@
 class Service::Analyzer
+  DASHBOARD = "dashboard".freeze
+  VIN = "vin".freeze
+  PLATE = "plate".freeze
+  NOTHING = "nothing".freeze
+
   def initialize(file_id, priority: 0)
     @file_id = file_id
     @priority = priority
@@ -13,13 +18,16 @@ class Service::Analyzer
   private
 
   def recognize(file)
-    classification = @ai.ask "Classify the image as [dashboard, vin, plate, nothing]", with: file.path
+    classification = @ai.ask "Classify the image as [#{DASHBOARD}, #{VIN}, #{PLATE}, #{NOTHING}]", with: file.path
 
     case classification
-    when "dashboard" then { odometer: @ai.ask("parse the odometer value and return a number only").to_i }
-    when "vin"       then { vin: @ai.ask("parse the vin and return a value only") }
-    when "plate"     then { plate: @ai.ask("parse the plate and return value in format А123БВ12") }
-    else Console.info self, "skip image"
+    when DASHBOARD then { odometer: @ai.ask("parse the odometer value and return a number only").to_i }
+    when VIN       then { vin: @ai.ask("parse the vin and return a value only") }
+    when PLATE     then { plate: @ai.ask("parse the plate and return value in format А123БВ12") }
+    when NOTHING   then {}
+    else
+      Console.info self, "skip image"
+      {}
     end
   rescue RubyLLM::OverloadedError => e
     Console.error self, "#{@ai.model} is overloaded"

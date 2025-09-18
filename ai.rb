@@ -22,7 +22,11 @@ class AI
       "Input Tokens: #{response.input_tokens}",
       "Output Tokens: #{response.output_tokens}"
 
-    response.content.chomp
+    content = response.content.chomp
+
+    return if content.split.count > 5
+
+    content
   end
 
   private
