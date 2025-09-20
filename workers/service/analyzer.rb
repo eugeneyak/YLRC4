@@ -2,6 +2,7 @@ class Service::Analyzer
   DASHBOARD = "dashboard".freeze
   VIN = "vin".freeze
   PLATE = "plate".freeze
+  CAR = "car".freeze
   NOTHING = "nothing".freeze
 
   def initialize(file_id, priority: 0)
@@ -11,6 +12,8 @@ class Service::Analyzer
   end
 
   def call
+    Async::Task.current.annotate "Analyze #{@file_id} photo"
+
     Telegram::Client.instance.get("getFile", file_id: @file_id) => file_path: file_path
     Telegram::Client.instance.download(file_path) { recognize it }
   end
@@ -18,19 +21,28 @@ class Service::Analyzer
   private
 
   def recognize(file)
-    classification = @ai.ask "Classify the image as [#{DASHBOARD}, #{VIN}, #{PLATE}, #{NOTHING}]", with: file.path
+    case classification = ask("Classify the image as [#{DASHBOARD}, #{VIN}, #{CAR}, #{NOTHING}]. Answer in one word.", with: file.path)
+    when DASHBOARD
+      { odometer: ask("Parse the odometer value. Return only the number.") }
 
-    case classification
-    when DASHBOARD then { odometer: @ai.ask("parse the odometer value and return a number only").to_i }
-    when VIN       then { vin: @ai.ask("parse the vin and return a value only") }
-    when PLATE     then { plate: @ai.ask("parse the plate and return value in format А123БВ12") }
-    when NOTHING   then {}
+    when VIN
+      { vin: ask("Parse the vin and return only the value") }
+
+    when CAR
+      case ask("Classify readability of the plate as [good, bad]. Answer in one word.")
+      when "good"
+        { plate: ask("Parse the plate and return value in format А123БВ12.") }
+
+      else
+        {}
+      end
+
     else
-      Console.info self, "skip image"
+      Console.info self, "skip: #{classification}"
       {}
     end
-  rescue RubyLLM::OverloadedError => e
-    Console.error self, "#{@ai.model} is overloaded"
+  rescue RubyLLM::OverloadedError, RubyLLM::ServiceUnavailableError => e
+    Console.error self, e, model: @ai.model
 
     if next_model = AI::MODELS[@priority + 1]
       Console.error self, "Model rotation: #{next_model}"
@@ -39,5 +51,10 @@ class Service::Analyzer
     else
       raise e
     end
+  end
+
+  def ask(...)
+    response = @ai.ask(...)
+    response.downcase if response.split.count == 1
   end
 end

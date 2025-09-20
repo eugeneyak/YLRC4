@@ -16,15 +16,13 @@ class AI
   def ask(prompt, ...)
     response = chat.ask(prompt, ...)
 
+    content = response.content.strip
+
     Console.info self,
       "Prompt: #{prompt}",
-      "Response: #{response.content}",
+      "Response: #{content}",
       "Input Tokens: #{response.input_tokens}",
       "Output Tokens: #{response.output_tokens}"
-
-    content = response.content.chomp
-
-    return if content.split.count > 5
 
     content
   end

@@ -8,8 +8,6 @@ GEM
       io-event (~> 1.11)
       metrics (~> 0.12)
       traces (~> 0.15)
-    async-container (0.24.0)
-      async (~> 2.22)
     async-http (0.89.0)
       async (>= 2.10.2)
       async-pool (~> 0.9)
@@ -112,7 +110,6 @@ PLATFORMS
 
 DEPENDENCIES
   async
-  async-container
   async-http
   base64
   rubocop

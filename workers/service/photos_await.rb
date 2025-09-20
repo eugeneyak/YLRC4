@@ -13,9 +13,8 @@ class Service::PhotosAwait < FSA::State
 
     in message: { text: Service::ANALYZE }
       data = analyze
-      Console.info self, **data
 
-      publish(**data)
+      publish(**data.compact)
 
       FSA::State::Terminate[]
     end
@@ -30,7 +29,7 @@ class Service::PhotosAwait < FSA::State
 
     photos
       .map { |photo| Async { Service::Analyzer.new(photo).call } }
-      .each { it.wait.each { |k, v| data[k] << v } }
+      .each { it.wait.each { |k, v| data[k] << v if v } }
 
     Console.info self, **data
 
@@ -42,7 +41,7 @@ class Service::PhotosAwait < FSA::State
   def publish(vin: "", plate: "", odometer: "")
     state => user: user, photos: photos
 
-    name = "#{user[:first_name]} #{user[:last_name]}".chomp
+    name = "#{user[:first_name]} #{user[:last_name]}".strip
 
     photos.each_slice(10) do |batch|
       payload = batch.map.with_index do |photo, index|
@@ -55,8 +54,8 @@ class Service::PhotosAwait < FSA::State
             caption: <<~TXT
               #{name} принял автомобиль:
 
-              VIN: #{vin}
-              Номер а/м: #{plate}
+              VIN: #{vin.upcase}
+              Номер а/м: #{plate.upcase}
               Одометр: #{odometer}
             TXT
           }
