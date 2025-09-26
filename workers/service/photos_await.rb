@@ -37,6 +37,8 @@ class Service::PhotosAwait < FSA::State
 
     data[:plate] = data[:plate].filter { PLATE_MATCHER.match? it.upcase }
 
+    data[:odometer] = data[:odometer].compact.map(&:to_i)
+
     data.transform_values do |values|
       values.group_by(&:itself).max_by { |_, v| v.size }&.first
     end
