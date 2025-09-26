@@ -31,7 +31,7 @@ class Service::Analyzer
     when CAR
       case ask("Classify readability of the plate as [good, bad]. Answer in one word.")
       when "good"
-        { plate: ask("Parse the plate and return value in format А123БВ12.") }
+        { plate: ask("Parse the plate and return value in format А123БВ12. Use only Cyrillic alphabet.") }
 
       else
         {}

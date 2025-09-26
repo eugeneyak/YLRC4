@@ -26,8 +26,10 @@ class Telegram::Poller
     @client.silent do
       @client.get "getUpdates", offset: @offset, timeout: 60, limit: 100
     end
+  rescue Errno::EHOSTUNREACH => e
+    raise e
   rescue StandardError => e
-    Console.warn self, "Error in the process of receiving updates: #{e.message}"
+    Console.warn self, "Error in the process of receiving updates:", e
     []
   end
 end

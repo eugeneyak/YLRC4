@@ -1,6 +1,8 @@
 require_relative 'analyzer'
 
 class Service::PhotosAwait < FSA::State
+  PLATE_MATCHER = /[А-Я][0-9]{3}[А-Я]{2}[0-9]{2,3}/
+
   include Telegram::API
 
   def call(update)
@@ -32,6 +34,8 @@ class Service::PhotosAwait < FSA::State
       .each { it.wait.each { |k, v| data[k] << v if v } }
 
     Console.info self, **data
+
+    data[:plate] = data[:plate].filter { PLATE_MATCHER.match? it.upcase }
 
     data.transform_values do |values|
       values.group_by(&:itself).max_by { |_, v| v.size }&.first
