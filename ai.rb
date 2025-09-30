@@ -14,17 +14,24 @@ class AI
   attr_reader :model
 
   def ask(prompt, ...)
-    response = chat.ask(prompt, ...)
+    Sentry.with_child_span(op: self.class.name) do |span|
+      response = chat.ask(prompt, ...)
 
-    content = response.content.strip
+      content = response.content.strip
 
-    Console.info self,
-      "Prompt: #{prompt}",
-      "Response: #{content}",
-      "Input Tokens: #{response.input_tokens}",
-      "Output Tokens: #{response.output_tokens}"
+      Console.info self,
+        "Prompt: #{prompt}",
+        "Response: #{content}",
+        "Input Tokens: #{response.input_tokens}",
+        "Output Tokens: #{response.output_tokens}"
 
-    content
+      span.set_data("ai.prompt", prompt)
+      span.set_data("ai.response", content)
+      span.set_data("ai.input_tokens", response.input_tokens)
+      span.set_data("ai.output_tokens", response.output_tokens)
+
+      content
+    end
   end
 
   private

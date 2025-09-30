@@ -17,7 +17,7 @@ class FSA::Switchman
 
       cur = @commands[command].build
 
-      case cur.call(update)
+      case cur.__call__(update)
       in FSA::State::Transit[nxt]
         Console.info self, "Transit to #{nxt} with", **cur.state.to_h
         @workers[from[:id]] = nxt.new(cur.state)
@@ -32,7 +32,7 @@ class FSA::Switchman
     in message: { from: from } if @workers.member? from[:id]
       cur = @workers[from[:id]]
 
-      case cur.call(update)
+      case cur.__call__(update)
       in FSA::State::Transit[nxt]
         Console.info self, "Transit to #{nxt} with", **cur.state.to_h
         @workers[from[:id]] = nxt.new(cur.state)

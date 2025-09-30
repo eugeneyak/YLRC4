@@ -5,6 +5,12 @@ class FSA::State
 
   attr_accessor :state
 
+  def __call__(update)
+    Sentry.with_child_span(op: self.class.name) do |span|
+      call(update)
+    end
+  end
+
   def call(_update); end
 end
 

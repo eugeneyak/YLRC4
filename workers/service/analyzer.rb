@@ -12,10 +12,12 @@ class Service::Analyzer
   end
 
   def call
-    Async::Task.current.annotate "Analyze #{@file_id} photo"
+    Sentry.with_child_span(op: self.class.name) do
+      Async::Task.current.annotate "Analyze #{@file_id} photo"
 
-    Telegram::Client.instance.get("getFile", file_id: @file_id) => file_path: file_path
-    Telegram::Client.instance.download(file_path) { recognize it }
+      Telegram::Client.instance.get("getFile", file_id: @file_id) => file_path: file_path
+      Telegram::Client.instance.download(file_path) { recognize it }
+    end
   end
 
   private

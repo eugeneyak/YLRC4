@@ -23,6 +23,8 @@ Console.logger.debug! if Config::DEV
 Sentry.init do |config|
   config.dsn = Config::Sentry::DSN
   config.environment = Config::DEV ? "development" : "production"
+  config.enable_logs = true
+  config.traces_sample_rate = 1.0
 end
 
 Sync do |task|
@@ -40,6 +42,9 @@ Sync do |task|
   switchman.register(service: Service)
 
   bot.updates.each do |update|
+    transaction = Sentry.start_transaction(name: "Update #{update[:update_id]}")
+    Sentry.get_current_scope.set_span(transaction)
+
     switchman << update
   rescue StandardError => e
     update => message: { from: from }
@@ -62,5 +67,8 @@ Sync do |task|
     end
 
     barrier.wait
+
+  ensure
+    transaction.finish
   end
 end
