@@ -6,7 +6,7 @@ class Service < FSA::Machine
       @photos = []
     end
 
-    attr_accessor :user, :photos
+    attr_accessor :user, :photos, :trace_id
 
     def to_h
       { user: user, photos: photos }
