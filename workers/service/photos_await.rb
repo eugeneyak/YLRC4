@@ -1,4 +1,5 @@
 require_relative 'analyzer'
+require_relative 'group_analyzer'
 
 class Service::PhotosAwait < FSA::State
   PLATE_MATCHER = /[А-Я][0-9]{3}[А-Я]{2}[0-9]{2,3}/
@@ -14,9 +15,13 @@ class Service::PhotosAwait < FSA::State
       FSA::State::Same[]
 
     in message: { text: Service::ANALYZE }
-      data = analyze
+      state => photos: photos
 
-      publish(**data.compact)
+      Service::GroupAnalyzer.new(photos).call
+
+      # data = analyze
+      #
+      # publish(**data.compact)
 
       FSA::State::Terminate[]
     end

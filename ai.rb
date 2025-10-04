@@ -34,8 +34,6 @@ class AI
     end
   end
 
-  private
-
   def chat
     @chat ||= begin
       llm = RubyLLM.context do |config|
