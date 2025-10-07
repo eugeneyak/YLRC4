@@ -1,7 +1,7 @@
 # Base runtime
 FROM ruby:3.4.5-alpine AS builder
 
-RUN apk add --no-cache build-base libpq-dev libpq5
+RUN apk add --no-cache build-base libpq-dev
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN gem install bundler --no-document && \
 
 FROM ruby:3.4.5-alpine
 
-RUN apk add --no-cache libpq5
+RUN apk add --no-cache libpq
 
 RUN addgroup -g 1000 -S appgroup && \
     adduser -u 1000 -S -G appgroup -s /bin/sh -h /app appuser
