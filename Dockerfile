@@ -16,6 +16,8 @@ RUN gem install bundler --no-document && \
 
 FROM ruby:3.4.5-alpine
 
+RUN apk add --no-cache libpq5
+
 RUN addgroup -g 1000 -S appgroup && \
     adduser -u 1000 -S -G appgroup -s /bin/sh -h /app appuser
 
