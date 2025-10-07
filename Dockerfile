@@ -1,7 +1,7 @@
 # Base runtime
 FROM ruby:3.4.5-alpine AS builder
 
-RUN apk add --no-cache build-base libpq-dev
+RUN apk add --no-cache build-base libpq-dev libpq5
 
 WORKDIR /app
 
