@@ -14,4 +14,16 @@ class Interactor::Stack < Delegator
   def __setobj__(obj)
     @stack = obj
   end
+
+  def parent
+    stack[-2]
+  end
+
+  def root
+    stack.first
+  end
+
+  def root?
+    stack.count == 1
+  end
 end

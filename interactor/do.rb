@@ -3,13 +3,12 @@ class Interactor::Do
     receiver = block.binding.receiver
     stack.push receiver
 
-    callables = receiver.class.middlewares.map do
-      it.new(receiver).method(:call).to_proc
-    end
-
-    callables << block
-
-    callables.reduce { |res, proc| res.call(&proc) }
+    receiver
+      .class
+      .middlewares
+      .reverse
+      .reduce(block) { |stack, middleware| middleware.new(receiver, stack) }
+      .call
   ensure
     stack.pop
   end

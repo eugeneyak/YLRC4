@@ -2,9 +2,13 @@ require "logger"
 
 class Loggable < Interactor::Middleware
   def call
-    logger.info "#{receiver.class} kek"
-    result = yield
-    logger.info "#{receiver.class} lol"
+    logger.info "Interactor #{receiver.class} started"
+    # Sentry.logger.info("Interactor #{receiver.class} started", interactor: receiver.class)
+
+    result = app.()
+
+    logger.info "Interactor #{receiver.class} finished"
+
     result
   end
 

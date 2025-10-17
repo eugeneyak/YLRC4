@@ -82,6 +82,7 @@ class Telegram::Client
 
       case data
       in ok: true, result: result
+        Console.info self, result
         result
 
       in ok: false, error_code: 401, description: description

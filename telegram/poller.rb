@@ -8,7 +8,7 @@ class Telegram::Poller
 
   def each
     loop do
-      Async::Task.current.annotate "Updates receiving (offset: #{@offset})"
+      # Async::Task.current.annotate "Updates receiving (offset: #{@offset})"
 
       updates.each do |update|
         Console.info self, **update

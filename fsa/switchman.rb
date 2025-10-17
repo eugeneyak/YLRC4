@@ -22,7 +22,7 @@ class FSA::Switchman
       handle update, @workers[from[:id]]
 
     else
-      Console.info self, "Skipping unknown update", **update
+      Console.info self, "Skipping unknown update"
     end
   end
 

@@ -30,6 +30,10 @@ module Telegram::API
     Telegram::Client.instance.post "sendMediaGroup", chat_id:, media:
   end
 
+  def edit_message_caption(chat_id, message_id, caption, show_caption_above_media: false)
+    Telegram::Client.instance.post "editMessageCaption", chat_id:, message_id:, caption:, show_caption_above_media:
+  end
+
   def get_file(file_id)
     Telegram::Client.instance.get("getFile", file_id:)
   end

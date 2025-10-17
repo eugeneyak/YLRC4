@@ -5,9 +5,30 @@ require "async/barrier"
 require "async/semaphore"
 
 require "sequel"
+require "sequel/model"
 require "sequel/adapters/postgres"
 
+require "que"
+
 require_relative "config"
+
+Sequel.extension :migration
+
+Sequel::Model.unrestrict_primary_key
+
+DB = Sequel.postgres(
+  database: Config::DB::DATABASE,
+  host: Config::DB::HOST,
+  port: Config::DB::PORT,
+  user: Config::DB::USER,
+  password: Config::DB::PASSWORD
+)
+
+DB.extension :pg_json
+
+Que.connection = DB
+Que::Job.run_synchronously = true if Config::DEV
+
 require_relative "telegram"
 require_relative "fsa"
 
@@ -21,17 +42,10 @@ require_relative "workers/service/init"
 require_relative "workers/service/photo_await"
 require_relative "workers/service/photos_await"
 
-Sequel.extension :migration
+require_relative "utils/parsers/plate"
 
-DB = Sequel.postgres(
-  database: Config::DB::DATABASE,
-  host: Config::DB::HOST,
-  port: Config::DB::PORT,
-  user: Config::DB::USER,
-  password: Config::DB::PASSWORD
-)
-
-DB.extension :pg_json
+require_relative "switchman"
+require_relative "entry"
 
 Console.logger.debug! if Config::DEV
 
@@ -54,21 +68,8 @@ Sync do |task|
 
   # Console.info "Started as #{bot.me[:id]} #{bot.me[:username]}"
 
-  switchman = FSA::Switchman.new
-
-  switchman.register(start: Start)
-  switchman.register(service: Service)
-
   bot.updates.each do |update|
-    update => update_id: update_id
-
-    DB.from(:updates).insert_conflict.insert(
-      update_id: update_id,
-      created_at: Sequel.function(:now),
-      payload: Sequel.pg_jsonb_wrap(update),
-    )
-
-    switchman << update
+    Entry.new(update).call
   rescue StandardError => e
     update => message: { from: from }
 

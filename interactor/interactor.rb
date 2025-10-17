@@ -1,8 +1,12 @@
 require "fiber/local"
-require "async"
 require "delegate"
 
 module Interactor
+  require_relative "caller"
+  require_relative "do"
+  require_relative "middleware"
+  require_relative "stack"
+
   def self.extended(base)
     base.prepend Interactor::Caller
 
