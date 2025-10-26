@@ -15,3 +15,6 @@ Style/FrozenStringLiteralComment:
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
+
+Style/SafeNavigation:
+  Enabled: false
