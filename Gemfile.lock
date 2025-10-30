@@ -27,6 +27,7 @@ GEM
       fiber-annotation
       fiber-local (~> 1.1)
       json
+    diff-lcs (1.6.2)
     event_stream_parser (1.0.0)
     faraday (2.13.4)
       faraday-net_http (>= 2.0, < 3.5)
@@ -67,9 +68,23 @@ GEM
     protocol-http2 (0.22.1)
       protocol-hpack (~> 1.4)
       protocol-http (~> 0.47)
+    que (2.4.1)
     racc (1.8.1)
     rainbow (3.1.1)
     regexp_parser (2.11.2)
+    rspec (3.13.1)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.5)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.6)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.6)
     rubocop (1.80.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -119,12 +134,15 @@ DEPENDENCIES
   async-http
   base64
   pg
+  que
+  rspec
   rubocop
   ruby_llm
   ruby_llm-schema
   sentry-ruby
   sequel
   sequel_pg
+  zeitwerk
 
 BUNDLED WITH
    2.6.9
