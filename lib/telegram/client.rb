@@ -39,7 +39,7 @@ class Telegram::Client
   end
 
   def get(method, **params)
-    Async::Task.current.annotate "Invoking #{method}"
+    # Async::Task.current.annotate "Invoking #{method}"
 
     Console.info self, "Invoke #{method}", **params unless @silent
 

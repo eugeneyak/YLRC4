@@ -6,9 +6,9 @@ class Dialogue::Service::Jobs::Analyze < Que::Job
   include Telegram::API
 
   def run(service_id)
-    p "Dialogue::Service::Jobs::Analyze"
-
     Sync do |task|
+      Telegram::Bot.new(Config::Telegram::TOKEN)
+
       DB.transaction do
         service = Service[service_id]
         user = User[service.user_id]
@@ -32,12 +32,15 @@ class Dialogue::Service::Jobs::Analyze < Que::Job
             Config::CHANNEL,
             message_id,
             caption.join("\n"),
-            caption_entities: [{ type: "text_mention", offset: 0, length: name.length, user: {id: user.id} }],
+            caption_entities: [{ type: "text_mention", offset: 0, length: name.length, user: { id: user.id } }],
             show_caption_above_media: true
           )
         end
 
         finish
+
+      rescue RubyLLM::BadRequestError
+        p "shtosh"
 
       rescue StandardError => e
         Console.error self, e
