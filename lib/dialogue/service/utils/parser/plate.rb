@@ -1,6 +1,9 @@
 class Dialogue::Service::Utils::Parser::Plate
   extend ::Interactor
 
+  use Middleware::Spanable
+  use Middleware::Loggable
+
   FORMAT = /(?<prefix>[А-Я])[[:space:]]?(?<number>\d{3})[[:space:]]?(?<suffix>[А-Я]{2})[[:space:]]?(?<region>\d{2,3})/
 
   REPLACEMENTS = {

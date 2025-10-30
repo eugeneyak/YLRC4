@@ -1,6 +1,9 @@
 class Dialogue::Service::PhotoAwait
   extend Interactor
 
+  use Middleware::Spanable
+  use Middleware::Loggable
+
   include Telegram::API
 
   def initialize(service, update)
@@ -45,9 +48,7 @@ class Dialogue::Service::PhotoAwait
       end
 
       message_ids = groups.map do |photos|
-        mids = send_media_group(Config::CHANNEL, photos.to_a)
-        p mids
-        mids.first[:message_id]
+        send_media_group(Config::CHANNEL, photos.to_a).first[:message_id]
       end
 
       service.update(message_ids: Sequel.pg_array(message_ids.flatten))

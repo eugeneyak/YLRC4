@@ -7,7 +7,10 @@ class Dialogue::Service::Utils::Solver
     number :mileage
   end
 
-  include Interactor
+  extend Interactor
+
+  use Middleware::Spanable
+  use Middleware::Loggable
 
   def initialize(service)
     @service = service

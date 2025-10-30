@@ -1,6 +1,9 @@
 class Dialogue::Service::Init
   extend Interactor
 
+  use Middleware::Spanable
+  use Middleware::Loggable
+
   include Telegram::API
 
   def initialize(service, update)

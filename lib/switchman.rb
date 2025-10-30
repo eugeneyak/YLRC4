@@ -20,6 +20,9 @@ class Switchman
 
       step =
         case update
+        in message: { text: "/start" }
+          init_dialogue Dialogue::Start, nil
+
         in message: { text: "/service" }
           init_dialogue Dialogue::Service::Init, Service
 
@@ -58,15 +61,15 @@ class Switchman
   def init_dialogue(step_cls, entity_cls)
     update => update_id: update_id, message: { from: from }
 
-    entity = entity_cls.create(id: update_id, user_id: from[:id])
+    entity = entity_cls.create(id: update_id, user_id: from[:id]) if entity_cls
 
     DB.from(:dialogues).where(user_id: from[:id], completed_at: nil).delete
     DB.from(:dialogues).insert(
       user_id: from[:id],
       trace_id: transaction.trace_id,
       step: step_cls.name,
-      entity: entity_cls.name,
-      entity_id: entity.id
+      entity: entity_cls&.name,
+      entity_id: entity&.id
     )
 
     step_cls.new(entity, update)

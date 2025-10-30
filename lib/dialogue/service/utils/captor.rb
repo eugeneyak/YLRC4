@@ -1,5 +1,8 @@
 class Dialogue::Service::Utils::Captor
-  include Interactor
+  extend Interactor
+
+  use Middleware::Spanable
+  use Middleware::Loggable
 
   def initialize(photos, caption: "", entities: [])
     @photos = photos
