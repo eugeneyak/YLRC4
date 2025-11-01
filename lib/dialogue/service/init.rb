@@ -16,12 +16,8 @@ class Dialogue::Service::Init
   def call
     update => message: { from: from }
 
-    send_message from, text,
-      reply_markup: {
-        keyboard: [[Dialogue::Service::COMMIT]],
-        resize_keyboard: true,
-        one_time_keyboard: true
-      }
+    # Убираем reply_markup с кнопкой - она появится после первой фотографии
+    send_message from, text
 
     FSA::State::Transit[Dialogue::Service::PhotoAwait]
   end
