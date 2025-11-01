@@ -15,20 +15,28 @@ class Dialogue::Service::PhotoAwait
 
   def call
     case update
-    in message: { photo: photo }
+    in message: { photo: photo, from: from }
+      # Проверяем, была ли это первая фотография
+      was_first_photo = service.photos.count.zero?
+      
       service.update(
         photos: Sequel.pg_array([*service.photos, photo.max_by { it[:file_size] }.fetch(:file_id)])
       )
 
+      # Отправляем кнопку только после получения первой фотографии
+      if was_first_photo
+        send_message from, "Фотография получена! Можете добавить ещё или подтвердить завершение.",
+          reply_markup: {
+            keyboard: [[Dialogue::Service::COMMIT]],
+            resize_keyboard: true,
+            one_time_keyboard: true
+          }
+      end
+
       FSA::State::Same[]
 
     in message: { text: Dialogue::Service::COMMIT, from: from } if service.photos.count.zero?
-      send_message from, "Нужно хотя бы одно изображение",
-        reply_markup: {
-          keyboard: [[Dialogue::Service::COMMIT]],
-          resize_keyboard: true,
-          one_time_keyboard: true
-        }
+      send_message from, "Нужно хотя бы одно изображение"
 
       FSA::State::Same[]
 
