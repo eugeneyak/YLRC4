@@ -57,7 +57,7 @@ class Dialogue::Service::PhotoAwait
 
       service.update(message_ids: Sequel.pg_array(message_ids.flatten))
 
-      Dialogue::Service::Jobs::Analyze.enqueue(service.id)
+      Dialogue::Service::Jobs::Analyze.enqueue(service.id, trace_id: Sentry.get_current_scope.get_transaction.trace_id)
 
       set_message_reaction(from, message_id, "👌", big: false)
 

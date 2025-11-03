@@ -5,7 +5,7 @@ require "ruby_llm/schema"
 class Dialogue::Service::Jobs::Analyze < Que::Job
   include Telegram::API
 
-  def run(service_id)
+  def run(service_id, trace_id: nil)
     Sync do |task|
       Telegram::Bot.new(Config::Telegram::TOKEN)
 
@@ -39,15 +39,16 @@ class Dialogue::Service::Jobs::Analyze < Que::Job
 
         finish
 
+      rescue Telegram::Error => e
+        if e.message.include? "message to edit not found"
+          expire
+        else
+          raise
+        end
+
       rescue RubyLLM::BadRequestError
         p "shtosh"
-
-      rescue StandardError => e
-        Console.error self, e
-        Sentry.capture_exception e
-        retry_in_default_interval
       end
     end
   end
-
 end
