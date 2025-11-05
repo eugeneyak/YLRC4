@@ -1,5 +1,5 @@
 class Dialogue::Service::Utils::Parser::VIN
-  extend ::Interactor
+  extend Yaks::Interactor
 
   use Middleware::Spanable
   use Middleware::Loggable

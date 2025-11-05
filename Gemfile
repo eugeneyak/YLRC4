@@ -15,3 +15,5 @@ gem "sentry-ruby"
 gem "sequel"
 gem "sequel_pg"
 gem "zeitwerk"
+
+gem "yaks-interactor", git: "https://github.com/eugeneyak/interactor.git"

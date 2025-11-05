@@ -1,5 +1,5 @@
 class Dialogue::Service::Init
-  extend Interactor
+  extend Yaks::Interactor
 
   use Middleware::Spanable
   use Middleware::Loggable

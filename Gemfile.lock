@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/eugeneyak/interactor.git
+  revision: 06fb75ce9ad3faacff4ef3581d3c2138a0366191
+  specs:
+    yaks-interactor (0.1.0)
+      fiber-local (>= 1.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -142,6 +149,7 @@ DEPENDENCIES
   sentry-ruby
   sequel
   sequel_pg
+  yaks-interactor!
   zeitwerk
 
 BUNDLED WITH

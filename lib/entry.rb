@@ -1,5 +1,5 @@
 class Entry
-  extend Interactor
+  extend Yaks::Interactor
 
   use Middleware::Loggable
 

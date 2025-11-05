@@ -1,5 +1,5 @@
 class Dialogue::Service::Utils::Parser::Plate
-  extend ::Interactor
+  extend Yaks::Interactor
 
   use Middleware::Spanable
   use Middleware::Loggable
@@ -19,7 +19,7 @@ class Dialogue::Service::Utils::Parser::Plate
     "M" => "М",
     "Y" => "У"
   }.freeze
-  
+
   def initialize(value)
     @value = value.upcase.gsub(pattern, REPLACEMENTS)
   end

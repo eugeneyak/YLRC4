@@ -1,6 +1,6 @@
 require "logger"
 
-class Middleware::Spanable < Interactor::Middleware
+class Middleware::Spanable < Yaks::Interactor::Middleware
   def call
     span = spawn_span
 

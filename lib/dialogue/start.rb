@@ -1,5 +1,5 @@
 class Dialogue::Start
-  extend Interactor
+  extend Yaks::Interactor
 
   use Middleware::Spanable
   use Middleware::Loggable

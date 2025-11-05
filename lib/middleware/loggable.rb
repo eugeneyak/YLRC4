@@ -1,9 +1,8 @@
 require "logger"
 
-class Middleware::Loggable < Interactor::Middleware
+class Middleware::Loggable < Yaks::Interactor::Middleware
   def call
     logger.info "Interactor #{receiver.class} started"
-    # Sentry.logger.info("Interactor #{receiver.class} started", interactor: receiver.class)
 
     result = app.()
 

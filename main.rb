@@ -1,5 +1,6 @@
 require "async"
 require "async/barrier"
+require "yaks/interactor"
 
 require_relative "lib/config"
 require_relative "loader"
