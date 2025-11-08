@@ -1,0 +1,14 @@
+# Использует основу с основного Dockerfile
+FROM ruby:3.4.5-alpine
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+
+RUN apk add --no-cache build-base libpq-dev git && \
+    gem install bundler --no-document && \
+    bundle install
+
+COPY . .
+
+CMD ["/bin/sh"]
