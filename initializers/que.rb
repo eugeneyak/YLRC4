@@ -19,6 +19,7 @@ Que.job_middleware.push(
 
   rescue StandardError => e
     Sentry.capture_exception(e)
+    raise
 
   ensure
     transaction.finish if transaction

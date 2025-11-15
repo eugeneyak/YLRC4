@@ -21,18 +21,24 @@ class Dialogue::Service::Utils::Parser::Plate
   }.freeze
 
   def initialize(value)
-    @value = value.upcase.gsub(pattern, REPLACEMENTS)
+    @value = value
   end
 
   attr_reader :value
 
   def call
-    [match[:prefix], match[:number], match[:suffix], " ", match[:region]].join if match
+    out = [match[:prefix], match[:number], match[:suffix], " ", match[:region]].join if match
+
+    span = Sentry.get_current_scope.get_span
+    span.set_data("in", value)
+    span.set_data("out", out)
+
+    out
   end
 
   def pattern = Regexp.union(REPLACEMENTS.keys)
 
   def match
-    @match ||= FORMAT.match(value)
+    @match ||= FORMAT.match(value.upcase.gsub(pattern, REPLACEMENTS))
   end
 end
