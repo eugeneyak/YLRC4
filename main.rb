@@ -1,3 +1,5 @@
+require "bundler/setup"
+
 require "async"
 require "async/barrier"
 require "yaks/interactor"
