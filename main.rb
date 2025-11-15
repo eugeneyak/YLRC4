@@ -11,7 +11,10 @@ loader.setup
 Sync do |task|
   %w[INT TERM].each { |signal| trap(signal) { task.stop } }
 
-  bot = Telegram::Bot.new(Config::Telegram::TOKEN)
+  ssl_context = OpenSSL::SSL::SSLContext.new
+  ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE if Config::DEV
+
+  bot = Telegram::Bot.new(Config::Telegram::TOKEN, ssl_context: ssl_context)
 
   Console.info "Started as #{bot.me[:id]} #{bot.me[:username]}"
 

@@ -3,11 +3,15 @@ require "async/http/internet/instance"
 class Telegram::Client
   extend Fiber::Local
 
-  HOST = "api.telegram.org".freeze
+  HOST = "https://api.telegram.org".freeze
 
-  def initialize(token)
+  def initialize(token, ssl_context: OpenSSL::SSL::SSLContext.new)
     @token = token
     @silent = false
+
+    @client = Async::HTTP::Client.new(
+      Async::HTTP::Endpoint.parse(HOST, ssl_context: ssl_context)
+    )
   end
 
   def silent(&)
@@ -18,14 +22,12 @@ class Telegram::Client
   end
 
   def download(path)
-    Async::Task.current.annotate "Downloading #{path}"
-
-    uri  = URI::HTTPS.build(host: HOST, path: "/file/bot#{@token}/#{path}")
+    uri  = URI::HTTP.build(path: "/file/bot#{@token}/#{path}")
     file = Tempfile.new(path)
 
-    Async::HTTP::Internet.get(uri) do |response|
-      response.body.each { |chunk| file << chunk }
-    end
+    response = @client.get(uri.request_uri)
+
+    response.body.each { |chunk| file << chunk }
 
     file.rewind
 
@@ -36,65 +38,68 @@ class Telegram::Client
     else
       file
     end
+
+  ensure
+    response.close if response
   end
 
   def get(method, **params)
-    # Async::Task.current.annotate "Invoking #{method}"
-
     Console.info self, "Invoke #{method}", **params unless @silent
 
-    uri = URI::HTTPS.build(
-      host: HOST,
-      path: "/bot#{@token}/#{method}", query: URI.encode_www_form(params.compact)
+    uri = URI::HTTP.build(
+      path: "/bot#{@token}/#{method}",
+      query: params.compact.any? ? URI.encode_www_form(params.compact) : nil
     )
 
-    Async::HTTP::Internet.get(uri) do |response|
-      data = JSON.parse(response.read, symbolize_names: true)
+    response = @client.get(uri.request_uri)
 
-      case data
-      in ok: true, result: result
-        result
+    data = JSON.parse(response.read, symbolize_names: true)
 
-      in ok: false, error_code: 401, description: description
-        raise Telegram::UnauthorizedError, description
+    case data
+    in ok: true, result: result
+      result
 
-      in ok: false, description: description
-        Console.error self, description
-        raise Telegram::Error, description
+    in ok: false, error_code: 401, description: description
+      raise Telegram::UnauthorizedError, description
 
-      else
-        raise RuntimeError
-      end
+    in ok: false, description: description
+      Console.error self, description
+      raise Telegram::Error, description
+
+    else
+      raise RuntimeError
     end
+  ensure
+    response.close if response
   end
 
   def post(method, **params)
-    Async::Task.current.annotate "Invoking #{method}"
+    Console.info self, "Invoke #{method}", **params unless @silent
 
-    Console.info self, "Invoke #{method}", **params
-
-    uri = URI::HTTPS.build(host: HOST, path: "/bot#{@token}/#{method}")
+    uri = URI::HTTP.build(path: "/bot#{@token}/#{method}")
     headers = Protocol::HTTP::Headers["Content-Type" => "application/json"]
     body = JSON.dump(params.compact)
 
-    Async::HTTP::Internet.post(uri, headers, body) do |response|
-      data = JSON.parse(response.read, symbolize_names: true)
+    response = @client.post(uri.request_uri, headers, body)
+    data = JSON.parse(response.read, symbolize_names: true)
 
-      case data
-      in ok: true, result: result
-        Console.info self, result
-        result
+    case data
+    in ok: true, result: result
+      Console.info self, result
+      result
 
-      in ok: false, error_code: 401, description: description
-        raise Telegram::UnauthorizedError, description
+    in ok: false, error_code: 401, description: description
+      raise Telegram::UnauthorizedError, description
 
-      in ok: false, description: description
-        Console.error self, description
-        raise Telegram::Error, description
+    in ok: false, description: description
+      Console.error self, description
+      raise Telegram::Error, description
 
-      else
-        raise RuntimeError
-      end
+    else
+      raise RuntimeError
     end
+
+  ensure
+    response.close if response
   end
 end

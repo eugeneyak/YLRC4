@@ -1,8 +1,8 @@
 class Telegram::Bot
   include Telegram::API
 
-  def initialize(token)
-    Telegram::Client.instance = Telegram::Client.new(token)
+  def initialize(...)
+    Telegram::Client.instance = Telegram::Client.new(...)
   end
 
   def updates
