@@ -16,8 +16,11 @@ Que.job_middleware.push(
     Sentry.get_current_scope.set_span(transaction) if Sentry.get_current_scope
 
     block.call
+
   rescue StandardError => e
     Sentry.capture_exception(e)
+
+  ensure
     transaction.finish if transaction
   end
 )
