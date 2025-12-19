@@ -3,8 +3,9 @@ require "ruby_llm/schema"
 
 class AI
   MODELS = [
-    "gemini-2.0-flash-lite".freeze,
-    "gemini-2.5-flash-lite".freeze
+    "sonar".freeze
+    # "gemini-2.0-flash-lite".freeze,
+    # "gemini-2.5-flash-lite".freeze
   ].freeze
 
   def initialize(model: MODELS.first)

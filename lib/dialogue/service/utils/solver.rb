@@ -43,8 +43,10 @@ class Dialogue::Service::Utils::Solver
   end
 
   def ask(files)
-    prompt = "Determine the car plate number, car mileage, car vin, car brand, car model. " \
-      "Use only Cyrillic letters for the license plate."
+    # prompt = "Determine the car plate number, car mileage, car vin, car brand, car model. " \
+    #   "Use only Cyrillic letters for the license plate."
+
+    prompt = "Распознай регистрационный номер, пробег, VIN, производителя автомобиля, модель автомобиля"
 
     response = AI.new.chat.with_schema(CarSchema).ask(prompt, with: files.map(&:path))
 
