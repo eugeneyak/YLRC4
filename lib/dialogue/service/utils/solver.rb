@@ -3,7 +3,7 @@ class Dialogue::Service::Utils::Solver
     string :brand
     string :model
     string :vin
-    string :plate, pattern: "А111БВ22", min_length: 8, max_length: 9
+    string :plate
     number :mileage
   end
 
