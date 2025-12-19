@@ -39,6 +39,7 @@ class AI
     @chat ||= begin
       llm = RubyLLM.context do |config|
         config.gemini_api_key = Config::GEMINI_API_KEY
+        config.perplexity_api_key = Config::PERPLEXITY_API_KEY
         config.default_model = model
       end
 
