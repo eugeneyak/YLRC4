@@ -15,6 +15,7 @@ class Dialogue::Service::Utils::Parser::Plate
     "O" => "О",
     "P" => "Р",
     "K" => "К",
+    "T" => "Т",
     "X" => "Х",
     "M" => "М",
     "Y" => "У"
